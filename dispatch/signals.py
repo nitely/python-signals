@@ -2,16 +2,14 @@
 __author__ = 'Esteban Castro Borsani'
 
 import threading
-#import logging
-#logger = logging.getLogger(__name__)
 
-import idle_queue
 from weak_ref import weak_ref
+
+__all__ = ['Signal', ]
 
 
 class Signal:
-    def __init__(self, name):
-        self.name = name
+    def __init__(self):
         self.callbacks = []
         self.lock = threading.Lock()
 
@@ -29,13 +27,9 @@ class Signal:
 
     def emit(self, *args, **kwargs):
         with self.lock:
-            #connected_methods = [callback.__name__ for callback in self.callbacks]
-            #logger.debug("Event emitted: {}".format(self.name))
             for weakref_callback in self.callbacks[:]:
                 callback = weakref_callback()
                 if callback is not None:
-                    idle_queue.idle_add(callback, *args, **kwargs)
-                else: #lost reference
+                    callback(*args, **kwargs)
+                else:  # lost reference
                     self.callbacks.remove(weakref_callback)
-            #if not self.callbacks:
-                #logger.debug("No signals assosiated to: {}".format(self.name))

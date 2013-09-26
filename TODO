@@ -1,0 +1,6 @@
+replace callbacks list by weakkeydictionaries
+do:
+for subscriber in sorted(wkd, key=wkd.__getitem__):
+    self.notify(subscriber, message)
+
+to maintain order
